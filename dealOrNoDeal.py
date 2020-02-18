@@ -1,37 +1,7 @@
 #! python 3
 # Deal or No Deal Terminal Game created by James Robertson - github.com/jamesurobertson
-
-print('''
-A termianl version of Deal or No Deal.
-The game rules:
-The game starts with 26 cases.
-Each case holds a value of .01 - 1,000,000
-.01                1,000
-1                  5,000
-5                  10,000
-10                 25,000
-25                 50,000
-50                 75,000
-75                 100,000
-100                200,000
-200                300,000
-300                400,000
-400                500,000
-500                750,000
-750                1,000,000
-
-At the start of the game you choose a random case with a hidden value
-After choosing a case, there are multiple rounds and the option of making
-a deal with the banker between rounds.\n''')
-
 import random, pprint, sys
 
-# To strikethrough text
-def strike(text):
-    result = ''
-    for c in text:
-        result = result + c + '\u0336'
-    return result
 
 # At Shuffle the dollar amounts into random cases
 def shuffle_cases():
@@ -132,6 +102,31 @@ def print_remaining_values(remaining_dict):
 # Main Game Loop
 
 while True:
+    print('''
+    A termianl version of Deal or No Deal.
+    The game rules:
+    The game starts with 25 cases.
+    Each case holds a value of $1 - $1,000,000
+    1                  1,000
+    1                  5,000
+    5                  10,000
+    10                 25,000
+    25                 50,000
+    50                 75,000
+    75                 100,000
+    100                200,000
+    200                300,000
+    300                400,000
+    400                500,000
+    500                750,000
+    750                1,000,000
+
+    At the start of the game you choose a case with a hidden value inside between $1 - $1,000,000
+    After choosing a case, there are a series of rounds where you open the remainging cases, revealing the values.
+    At the end of each round the banker will offer you a deal, you can either accept the deal or keep going until
+    There is only 1 unopened case left besides your own. You then get the choice of taking your case or the remaining case.
+
+    If you have any suggestions for the game please let me know. Thanks for playing! :)\n''')
     cases = {}
     shuffle_cases()
     hidden_cases = dict.copy(cases)
@@ -156,9 +151,9 @@ while True:
         number_of_cases_to_choose = rounds[round_counter]
         print_remaining_cases(cases)
         print_remaining_values(hidden_cases)
-        print(f'\nIn round #{round_counter} you have to choose {number_of_cases_to_choose} cases')
+        print(f'\nIn round #{round_counter} you have to open {number_of_cases_to_choose} cases.')
         for i in range(1, number_of_cases_to_choose + 1):
-            print(f'Choose case number {i}: ', end='')
+            print(f'Choose a case to open from the remaining cases list: ', end='')
             guess = input()
             while (guess in  used_cases or guess == player_choice) or (not guess.isnumeric() or not (1 <= int(guess) <= 25)):
                 while not guess.isnumeric() or not (1 <= int(guess) <= 25):
@@ -178,7 +173,7 @@ while True:
         print('-------------------------------------------')
         round_counter += 1
     if round_counter == len(rounds):
-        print('\n We are down to the last two!')
+        print('\nWe are down to the last two!')
         print('Do you want to keep your original case or switch to the remaining case?')
         print('Press ENTER to keep your case. Type (s)witch to switch cases.')
         final = input()
