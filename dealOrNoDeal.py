@@ -24,9 +24,9 @@ def bank_offer(remaining_amounts, round_number):
 
 
     additional_calculation_per_round = {1: .13, 2:.17, 3: .2, 4:.25, 5:.33, 5:.33, 6:.33, \
-        7: .33, 8: .33, 9: .33, 10: .33, 11: .33}
-    additiona_high_amount_calcuation_per_round = {1: .11, 2: .16, 3: .21, 4: .26, 5: .31, 6:.41, \
-        7: .51, 8: .61, 9: .71, 10: .71, 11: .71}
+        7: .33, 8: .5, 9: .5, 10: .5, 11: .5}
+    additional_high_amount_calcuation_per_round = {1: .11, 2: .16, 3: .21, 4: .26, 5: .31, 6:.41, \
+        7: .51, 8: .61, 9: .71, 10: .81, 11: .91}
 
     # Calculating the totals for low/high remaining_amounts left
     for value in remaining_amounts.values():
@@ -35,8 +35,8 @@ def bank_offer(remaining_amounts, round_number):
         else:
             remining_high_amounts_sum += int(value)
 
-    round_calc = additiona_high_amount_calcuation_per_round[round_number]
-    high_round_calc = additiona_high_amount_calcuation_per_round[round_number]
+    round_calc = additional_calculation_per_round[round_number]
+    high_round_calc = additional_high_amount_calcuation_per_round[round_number]
 
     # The bank's offer calculation
     bank_offer = round((remining_low_amounts_sum * round_calc) \
@@ -56,6 +56,7 @@ def bank_offer(remaining_amounts, round_number):
     else:
         print(f"\nNO DEAL! Time for round #{round_number + 1} ")
 
+
 def print_remaining_cases(remaining_dict):
     remaining_cases = []
 
@@ -72,6 +73,7 @@ def print_remaining_cases(remaining_dict):
             remaining_cases_string += str(i) + ', '
 
     print(f'Remaining cases: {remaining_cases_string}')
+
 
 def print_remaining_values(remaining_dict):
     remaining_values = []
@@ -132,6 +134,7 @@ while True:
         player_choice = input()
 
     players_case = cases[int(player_choice)]
+    print(players_case)
 
     used_cases = {}
     used_cases[player_choice] = players_case
