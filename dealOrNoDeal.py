@@ -134,7 +134,6 @@ while True:
         player_choice = input()
 
     players_case = cases[int(player_choice)]
-    print(players_case)
 
     used_cases = {}
     used_cases[player_choice] = players_case
