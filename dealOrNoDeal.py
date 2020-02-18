@@ -1,46 +1,42 @@
 #! python 3
-# Deal or No Deal Terminal Game created by James Robertson - github.com/jamesurobertson
-import random, pprint, sys
+# Deal or No Deal Terminal Game created by James Robertson
+
+
+import random
+import sys
 
 
 # Shuffles the dollar amounts into random cases
-def shuffle_cases():
-    dollar_amounts = ['1', '5', '10', '25', '50', '75', '100', '200', '300', '400',
-        '500', '750', '1000', '5000', '10000', '25000', '50000', '75000', '100000',
-        '200000', '300000', '400000', '500000', '750000', '1000000']
+def shuffled_cases():
+    dollar_amounts = [1, 5, 10, 25, 50, 75, 100, 200, 300, 400,
+                      500, 750, 1000, 5000, 10000, 25000, 50000, 75000, 100000,
+                      200000, 300000, 400000, 500000, 750000, 1000000]
 
     random.shuffle(dollar_amounts)
     for i in range(len(dollar_amounts)):
         cases[i + 1] = dollar_amounts[i]
 
+    return cases
+
 
 # The banks offer after each round.
 def bank_offer(remaining_amounts, round_number):
+    remaining_low_amounts_sum = sum(v for v in remaining_amounts.values()
+                                    if v <= 75000)
+    remaining_high_amounts_sum = sum(v for v in remaining_amounts.values()
+                                     if v >= 100000)
 
-    # Amounts left that are <= 75,000
-    remining_low_amounts_sum = 0
-    # Amounts left that are >= 100,000
-    remining_high_amounts_sum = 0
+    # Additional parameters per round for banker to calculate offer
+    calculation_per_round = [.13, .17, .2, .25, .33,
+                             .33, .33, .5, .5, .5, .5]
+    high_amount_calculation_per_round = [.11, .16, .21, .26, .31,
+                                         .41, .51, .61, .71, .81, .91]
 
+    round_calc = calculation_per_round[round_number - 1]
+    high_round_calc = high_amount_calculation_per_round[round_number - 1]
 
-    additional_calculation_per_round = {1: .13, 2:.17, 3: .2, 4:.25, 5:.33, 5:.33, 6:.33, \
-        7: .33, 8: .5, 9: .5, 10: .5, 11: .5}
-    additional_high_amount_calcuation_per_round = {1: .11, 2: .16, 3: .21, 4: .26, 5: .31, 6:.41, \
-        7: .51, 8: .61, 9: .71, 10: .81, 11: .91}
-
-    # Calculating the totals for low/high remaining_amounts left
-    for value in remaining_amounts.values():
-        if int(value) <= 75000:
-            remining_low_amounts_sum += int(value)
-        else:
-            remining_high_amounts_sum += int(value)
-
-    round_calc = additional_calculation_per_round[round_number]
-    high_round_calc = additional_high_amount_calcuation_per_round[round_number]
-
-    # The bank's offer calculation
-    bank_offer = round((remining_low_amounts_sum * round_calc) \
-        + (remining_high_amounts_sum * round_calc * high_round_calc))
+    bank_offer = round((remaining_low_amounts_sum * round_calc) +
+                       (remaining_high_amounts_sum * round_calc * high_round_calc))
 
     print(f'\nThe bank offers ${bank_offer} Do you want to make the deal?')
     print('DEAL OR NO DEAL? Press "enter" for NO DEAL! Type (d)eal for Deal.', end='')
@@ -54,50 +50,17 @@ def bank_offer(remaining_amounts, round_number):
         print(f'Congratulations! You won {bank_offer}!! Please play again soon :) ')
         sys.exit()
     else:
-        print(f"\nNO DEAL! Time for round #{round_number + 1} ")
+        print('\n-------------------------------------------')
+        print(f"NO DEAL! Time for round #{round_number + 1}\n")
 
 
-def print_remaining_cases(remaining_dict):
-    remaining_cases = []
-
-    for k in remaining_dict.keys():
-        remaining_cases += [int(k)]
-
-    remaining_cases = sorted(remaining_cases)
-    remaining_cases_string = ''
-
-    for i in remaining_cases:
-        if i == remaining_cases[-1]:
-            remaining_cases_string += str(i)
-        else:
-            remaining_cases_string += str(i) + ', '
-
+def print_remaining_cases_and_values(for_cases_dict, for_values_dict):
+    remaining_cases_string = ', '.join([str(k) for k in sorted(for_cases_dict.keys())])
+    remaining_values_string = ', '.join(str(v) for v in sorted(for_values_dict.values()))
     print(f'Remaining cases: {remaining_cases_string}')
-
-
-def print_remaining_values(remaining_dict):
-    remaining_values = []
-
-    for v in remaining_dict.values():
-        if len(remaining_dict) == 1:
-            print(f'You won {v}. Thanks for playing')
-            sys.exit()
-        else:
-            remaining_values += [int(v)]
-
-    remaining_values = sorted(remaining_values)
-    remaining_values_string = ''
-
-    for i in remaining_values:
-        if i == remaining_values[-1]:
-            remaining_values_string += str(i)
-        else:
-            remaining_values_string += str(i) + ', '
-
     print(f'Remaining values: {remaining_values_string}')
 
 # Main Game Loop
-
 while True:
     print('''
     A termianl version of Deal or No Deal.
@@ -125,58 +88,72 @@ while True:
 
     If you have any suggestions for the game please let me know. Thanks for playing! :)\n''')
     cases = {}
-    shuffle_cases()
+    cases = shuffled_cases()
     hidden_cases = dict.copy(cases)
     print('Choose a case #(1-25): ', end='')
     player_choice = input()
     while not player_choice.isnumeric() or not (1 <= int(player_choice) <= 25):
         print('Please enter a postive integer in range of 1-25')
         player_choice = input()
+    player_choice = int(player_choice)
 
-    players_case = cases[int(player_choice)]
+    players_case = cases[player_choice]
 
     used_cases = {}
     used_cases[player_choice] = players_case
     round_counter = 1
 
     # Number of cases to choose per round
-    rounds = { 1:5, 2:5, 3:4, 4:2, 5:2, 6:1, 7:1, 8:1, 9:1, 10:1, 11:1}
+    rounds = {1: 5, 2: 5, 3: 4, 4: 2, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1}
     print('\n------------------------------------')
     print(f'\nGreat! You choose case #{player_choice}. I hope it has the 1,000,000!\n')
-    del cases[int(player_choice)]
-    while round_counter < len(rounds):
+    del cases[player_choice]
+    for round_counter in range(1, len(rounds)):
+
         number_of_cases_to_choose = rounds[round_counter]
-        print_remaining_cases(cases)
-        print_remaining_values(hidden_cases)
+        print_remaining_cases_and_values(cases, hidden_cases)
         print(f'\nIn round #{round_counter} you have to open {number_of_cases_to_choose} cases.')
+
         for i in range(1, number_of_cases_to_choose + 1):
             print(f'Choose a case to open from the remaining cases list: ', end='')
             guess = input()
-            while (guess in  used_cases or guess == player_choice) or (not guess.isnumeric() or not (1 <= int(guess) <= 25)):
-                while not guess.isnumeric() or not (1 <= int(guess) <= 25):
+            # TODO This check on guess seems like it could be shortened.
+            while (not guess.isnumeric() or not (1 <= int(guess) <= 25)) or \
+                  (int(guess) in used_cases or int(guess) == player_choice):
+                if not guess.isnumeric() or not (1 <= int(guess) <= 25):
                     print('You must enter a positive whole number between 1 and 25.')
                     print('What case would you like to choose?: ', end='')
                     guess = input()
-                print(f"Case #{guess} has already been chosen. Please choose another case: ", end = '')
-                guess = input()
-
-            used_cases[guess] = cases[int(guess)]
-
-            print(f'Case #{guess} = {cases[int(guess)]}\n')
-            del cases[int(guess)]
-            del hidden_cases[int(guess)]
-
-        bank_offer(hidden_cases, round_counter)
+                else:
+                    print('That cases has already been chosen. Please choose a new case')
+                    print('What case would you like to choose?: ', end='')
+                    guess = input()
+            guess = int(guess)
+            used_cases[guess] = cases[guess]
+            print(f'Case #{guess} = {cases[guess]}\n')
+            del cases[guess]
+            del hidden_cases[guess]
         print('-------------------------------------------')
+        print_remaining_cases_and_values(cases, hidden_cases)
+        bank_offer(hidden_cases, round_counter)
         round_counter += 1
-    if round_counter == len(rounds):
-        print('\nWe are down to the last two!')
-        print('Do you want to keep your original case or switch to the remaining case?')
-        print('Press ENTER to keep your case. Type (s)witch to switch cases.')
+
+    print('\nWe are down to the last two!')
+    print_remaining_cases_and_values(cases, hidden_cases)
+    print('\nDo you want to keep your original case or switch to the remaining case?')
+    print('Press ENTER to keep your case. Type (s)witch to switch cases.')
+    final = input()
+
+    while final != '' and final != 's':
+        print('Wrong input received. Press ENTER to keep your case. Type (s)witch to switch cases.')
         final = input()
-        if final == '':
-            print(f'Congratulations! You won ${players_case}! Thank you for playing!')
-            sys.exit()
-        else:
-            del hidden_cases[int(player_choice)]
-            print_remaining_values(hidden_cases)
+
+    if final == '':
+        print(f'Congratulations! You won ${players_case}! Thank you for playing!')
+        sys.exit()
+    else:
+        del hidden_cases[player_choice]
+        # TODO: a better way to print the value in a 1 length dictionary?
+        hidden = ''.join(str(v) for v in hidden_cases.values())
+        print(f'Congratulations! You won ${hidden}. Thank you for playing!')
+        sys.exit()
