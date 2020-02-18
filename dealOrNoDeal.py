@@ -3,7 +3,7 @@
 import random, pprint, sys
 
 
-# At Shuffle the dollar amounts into random cases
+# Shuffles the dollar amounts into random cases
 def shuffle_cases():
     dollar_amounts = ['1', '5', '10', '25', '50', '75', '100', '200', '300', '400',
         '500', '750', '1000', '5000', '10000', '25000', '50000', '75000', '100000',
@@ -14,7 +14,7 @@ def shuffle_cases():
         cases[i + 1] = dollar_amounts[i]
 
 
-# The bank offer after each round. calculation based off a reddit post I found.
+# The banks offer after each round.
 def bank_offer(remaining_amounts, round_number, players_case):
 
     # Amounts left that are <= 75,000
