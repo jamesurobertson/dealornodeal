@@ -16,7 +16,6 @@ def shuffle_cases():
 
 # The banks offer after each round.
 def bank_offer(remaining_amounts, round_number):
-    print(remaining_amounts)
 
     # Amounts left that are <= 75,000
     remining_low_amounts_sum = 0
@@ -118,7 +117,7 @@ while True:
     750                1,000,000
 
     At the start of the game you choose a case with a hidden value inside between $1 - $1,000,000
-    After choosing a case, there are a series of rounds where you open the remainging cases, revealing the values.
+    After choosing a case, there are a series of rounds where you open the remaining cases, revealing the values.
     At the end of each round the banker will offer you a deal, you can either accept the deal or keep going until
     There is only 1 unopened case left besides your own. You then get the choice of taking your case or the remaining case.
 
@@ -133,7 +132,6 @@ while True:
         player_choice = input()
 
     players_case = cases[int(player_choice)]
-    print(players_case)
 
     used_cases = {}
     used_cases[player_choice] = players_case
