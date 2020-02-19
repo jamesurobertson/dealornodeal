@@ -8,7 +8,7 @@ import sys
 
 # Shuffles the dollar amounts into random cases
 def shuffled_cases():
-    dollar_amounts = [1, 5, 10, 25, 50, 75, 100, 200, 300, 400,
+    dollar_amounts = [.01, 1, 5, 10, 25, 50, 75, 100, 200, 300, 400,
                       500, 750, 1000, 5000, 10000, 25000, 50000, 75000, 100000,
                       200000, 300000, 400000, 500000, 750000, 1000000]
 
@@ -21,6 +21,8 @@ def shuffled_cases():
 
 # The banks offer after each round.
 def bank_offer(remaining_amounts, round_number):
+    rounds = {1: 5, 2: 5, 3: 4, 4: 2, 5: 2, 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1}
+
     remaining_low_amounts_sum = sum(v for v in remaining_amounts.values()
                                     if v <= 75000)
     remaining_high_amounts_sum = sum(v for v in remaining_amounts.values()
@@ -39,14 +41,16 @@ def bank_offer(remaining_amounts, round_number):
                        (remaining_high_amounts_sum * round_calc * high_round_calc))
 
     print(f'\nThe bank offers ${bank_offer} Do you want to make the deal?')
-    print('DEAL OR NO DEAL? Press "enter" for NO DEAL! Type (d)eal for Deal.', end='')
+    if round_number < len(rounds) - 1:
+        print(f'You have to choose {rounds[round_number + 1]} cases before your next offer.')
+    print("DEAL OR NO DEAL? Press 'enter' for NO DEAL! Type 'D' for Deal: ", end='')
     answer = input()
 
-    while answer != '' and answer != 'd':
-        print("Please press 'enter' or type 'd' for deal.", end='')
+    while answer != '' and answer.lower() != 'd':
+        print("Please press 'enter' for NO DEAL! or type 'D' for deal: ", end='')
         answer = input()
 
-    if answer == 'd':
+    if answer.lower() == 'd':
         print(f'Congratulations! You won {bank_offer}!! Please play again soon :) ')
         sys.exit()
     else:
@@ -63,11 +67,12 @@ def print_remaining_cases_and_values(for_cases_dict, for_values_dict):
 # Main Game Loop
 while True:
     print('''
-    A termianl version of Deal or No Deal.
+    A termianl version of NBC's Deal or No Deal.
     The game rules:
-    The game starts with 25 cases.
-    Each case holds a value of $1 - $1,000,000
-    1                  1,000
+    The game starts with 26 cases.
+    Each case holds a value of $.01 - $1,000,000:
+
+    .01                1,000
     1                  5,000
     5                  10,000
     10                 25,000
@@ -81,19 +86,21 @@ while True:
     500                750,000
     750                1,000,000
 
-    At the start of the game you choose a case with a hidden value inside between $1 - $1,000,000
-    After choosing a case, there are a series of rounds where you open the remaining cases, revealing the values.
+    At the start of the game you choose a case that will have a hidden value inside between $.01 - $1,000,000.
+    This case is set aside. There are then a series of rounds where you open the remaining cases, revealing the values.
+    These values and case numbers are then removed from the remaining pool of cases and values.
     At the end of each round the banker will offer you a deal, you can either accept the deal or keep going until
-    There is only 1 unopened case left besides your own. You then get the choice of taking your case or the remaining case.
+    there is only 1 unopened case left besides your own. If you make it this far,
+    you then get the choice of taking your case or the remaining case.
 
-    If you have any suggestions for the game please let me know. Thanks for playing! :)\n''')
+    Goodluck and thanks for playing! :)\n''')
     cases = {}
     cases = shuffled_cases()
     hidden_cases = dict.copy(cases)
-    print('Choose a case #(1-25): ', end='')
+    print('Choose a case #(1-26): ', end='')
     player_choice = input()
-    while not player_choice.isnumeric() or not (1 <= int(player_choice) <= 25):
-        print('Please enter a postive integer in range of 1-25')
+    while not player_choice.isnumeric() or not (1 <= int(player_choice) <= 26):
+        print('Please enter a postive integer in range of 1-26')
         player_choice = input()
     player_choice = int(player_choice)
 
@@ -104,7 +111,7 @@ while True:
     round_counter = 1
 
     # Number of cases to choose per round
-    rounds = {1: 5, 2: 5, 3: 4, 4: 2, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1}
+    rounds = {1: 5, 2: 5, 3: 4, 4: 2, 5: 2, 6: 2, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1}
     print('\n------------------------------------')
     print(f'\nGreat! You choose case #{player_choice}. I hope it has the 1,000,000!\n')
     del cases[player_choice]
@@ -118,10 +125,10 @@ while True:
             print(f'Choose a case to open from the remaining cases list: ', end='')
             guess = input()
             # TODO This check on guess seems like it could be shortened.
-            while (not guess.isnumeric() or not (1 <= int(guess) <= 25)) or \
+            while (not guess.isnumeric() or not (1 <= int(guess) <= 26)) or \
                   (int(guess) in used_cases or int(guess) == player_choice):
-                if not guess.isnumeric() or not (1 <= int(guess) <= 25):
-                    print('You must enter a positive whole number between 1 and 25.')
+                if not guess.isnumeric() or not (1 <= int(guess) <= 26):
+                    print('You must enter a positive whole number between 1 and 26.')
                     print('What case would you like to choose?: ', end='')
                     guess = input()
                 else:
@@ -153,7 +160,7 @@ while True:
         sys.exit()
     else:
         del hidden_cases[player_choice]
-        # TODO: a better way to print the value in a 1 length dictionary?
+        # TODO: a better way to print the value in a 1 length
         hidden = ''.join(str(v) for v in hidden_cases.values())
         print(f'Congratulations! You won ${hidden}. Thank you for playing!')
         sys.exit()
